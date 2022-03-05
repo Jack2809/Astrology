@@ -1,8 +1,13 @@
+import 'package:astrology/src/repository/google_sign_in.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+
 
 class LoginPage extends StatelessWidget{
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -197,7 +202,11 @@ class LoginPage extends StatelessWidget{
                     border: Border.all(color:Colors.white70)
                 ),
                 child: OutlinedButton(
-                  onPressed: (){},
+                  onPressed: () {
+                    final provider = Provider.of<GoogleSignInProvider>(
+                        context, listen: false);
+                    provider.googleLogin();
+                  },
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -216,9 +225,6 @@ class LoginPage extends StatelessWidget{
 
                 ),
               ),
-
-
-
 
             ],
           ),

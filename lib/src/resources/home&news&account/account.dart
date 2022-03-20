@@ -1,22 +1,34 @@
+import 'package:astrology/src/repository/current_user_shared_preferences.dart';
+import 'package:astrology/src/resources/edit_account/profile_detail.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:astrology/src/resources/edit_account/edit_account.dart';
+import 'package:provider/provider.dart';
+
+import '../../models/user.dart';
+import '../../repository/google_sign_in.dart';
 
 
 class AccountPage extends StatefulWidget{
+
+  List<Profile> profileList;
+  AccountPage({required this.profileList});
 
   @override
   State<AccountPage> createState() => _AccountPageState();
 }
 
 class _AccountPageState extends State<AccountPage> {
-  String _imageLink = 'https://scontent.fsgn2-4.fna.fbcdn.net/v/t31.18172-8/16423117_671178093084590_8683797133784660545_o.jpg?_nc_cat=109&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=_oOW4y6GZ0sAX8pL2BX&tn=8dDZ6yBmARp1i9Mt&_nc_ht=scontent.fsgn2-4.fna&oh=00_AT_HiU2oIuAwvz28e-oZiTwWp3I_VP-g32NHc9R8yrYY3Q&oe=622799C2';
-  String _name ='Hiếu Nguyễn';
+  String _imageLink = CurrentUser.getAvatarLink() ?? '';
+  String _name = CurrentUser.getCurrentUserName() ?? '';
+  bool gender = CurrentUser.getGender() ?? true;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
+        height: size.height,
         padding: EdgeInsets.fromLTRB(15.0,20.0,15.0,20.0),
         decoration: BoxDecoration(
             image: DecorationImage(
@@ -40,7 +52,12 @@ class _AccountPageState extends State<AccountPage> {
                       ),
                     ),
                     Spacer(),
-                    CircleAvatar(backgroundColor: Colors.white,radius: 15,),
+                    GestureDetector(onTap: (){
+                        final provider = Provider.of<GoogleSignInProvider>(
+                        context, listen: false);
+                        provider.logout();
+                    },
+                        child: CircleAvatar(backgroundColor: Colors.white,radius: 15,)),
                   ],
                 ),
               ),
@@ -69,7 +86,8 @@ class _AccountPageState extends State<AccountPage> {
                           bottom:0,
                           right: 0,
                           child: CircleAvatar(
-                            child: Icon(Icons.male),
+                            child: Icon(!gender?Icons.male:Icons.female),
+                            backgroundColor: !gender?Color.fromRGBO(25,88,255,0.8):Color.fromRGBO(255,74,183,0.8),
                             radius: 15.0,
                           ),
                         ),
@@ -77,14 +95,12 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ),
 
-
-
                   Container(
                     margin: EdgeInsets.all(10.0),
                     child: Column(
                       children: <Widget>[
                         Text(
-                          'Hiếu Nguyễn',
+                          _name,
                           style: TextStyle(
                             fontSize: 20.0,
                             color: Colors.white,
@@ -176,10 +192,20 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
 
-            Follower(imageLink: _imageLink, name: _name),
-            Follower(imageLink: _imageLink, name: _name),
-            Follower(imageLink: _imageLink, name: _name),
-            Follower(imageLink: _imageLink, name: _name),
+    ListView.separated(
+      shrinkWrap: true,
+    padding: const EdgeInsets.all(8),
+    itemCount: widget.profileList.length,
+    itemBuilder: (BuildContext context, int index) {
+    if(index != 0){
+      return Follower(imageLink: widget.profileList[index].profilePhoto, name:widget.profileList[index].name,item:widget.profileList[index],);
+    }else{
+      return SizedBox();
+    }
+    },
+    separatorBuilder: (BuildContext context, int index) => const Divider(),
+    ),
+
 
           ],
         ),
@@ -192,54 +218,50 @@ class _AccountPageState extends State<AccountPage> {
 class Follower extends StatelessWidget{
   String imageLink ;
   String name ;
+  Profile item;
 
-  Follower({required this.imageLink,required this.name});
+  Follower({required this.imageLink,required this.name,required this.item});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Container(
-      height: size.height * 0.1,
-      margin: EdgeInsets.fromLTRB(0,5,0,5),
-      padding: EdgeInsets.fromLTRB(15.0,0,15.0,0),
-      decoration: BoxDecoration(
-        color: Color.fromRGBO(70, 31,72, 1),
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      child: Row(
-        children: <Widget>[
-          CircleAvatar(
-            backgroundImage: NetworkImage(imageLink),
-            radius: 20.0,
-          ),
-          SizedBox(width:20.0,),
-          Text(
-            name,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+    return GestureDetector (
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileDetailPage(item:item)),);
+      },
+      child: Container(
+        height: size.height * 0.1,
+        margin: EdgeInsets.fromLTRB(0,5,0,5),
+        padding: EdgeInsets.fromLTRB(15.0,0,15.0,0),
+        decoration: BoxDecoration(
+          color: Color.fromRGBO(70, 31,72, 1),
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: Row(
+          children: <Widget>[
+            CircleAvatar(
+              backgroundImage: NetworkImage(imageLink),
+              radius: 20.0,
             ),
-          ),
-          Spacer(),
-          Container(
-            height:size.height * 0.05,
-
-            decoration: BoxDecoration(
-              color: Color.fromRGBO(255,74,183,1),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: OutlinedButton(
-              onPressed: (){},
-              child: Text(
-                'following',
-                style: TextStyle(
-                  color: Colors.white,
-
-                ),
+            SizedBox(width:20.0,),
+            Text(
+              name,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          )
-        ],
+            Spacer(),
+            Container(
+              height:size.height * 0.05,
+
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(255,74,183,1),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

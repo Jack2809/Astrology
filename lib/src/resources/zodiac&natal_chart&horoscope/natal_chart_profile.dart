@@ -1,20 +1,26 @@
 import 'package:astrology/src/models/natal_chart_model.dart';
-import 'package:astrology/src/repository/current_user_shared_preferences.dart';
+import 'package:astrology/src/models/user.dart';
 import 'package:astrology/src/repository/natal_chart_.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class NatalChartPage extends StatelessWidget{
+class NatalChartProfilePage extends StatelessWidget{
 
-  String _imageLink = CurrentUser.getAvatarLink() ?? '';
-  String name = CurrentUser.getCurrentUserName() ?? '';
-  bool gender = CurrentUser.getGender() ?? true ;
-  String date = CurrentUser.getDate() ?? '';
-  String time = CurrentUser.getTime() ?? '';
-  double longitude= CurrentUser.getLongitude() ?? 0.0;
-  double latitude = CurrentUser.getLatitude() ?? 0.0;
-  int id = CurrentUser.getId() ?? 0 ;
+  Profile item;
+  NatalChartProfilePage({required this.item});
 
+
+
+  String getDate(String date){
+    String formatDate = DateFormat.yMd().format(DateTime.parse(date));
+    return formatDate;
+  }
+
+  String getTime(String date){
+    String formatTime = DateFormat.yMd().format(DateTime.parse(date));
+    return formatTime;
+  }
 
 
   List<ZodiacInformation> _list1 = [
@@ -45,10 +51,10 @@ class NatalChartPage extends StatelessWidget{
           padding: EdgeInsets.fromLTRB(10, 0, 10, 10),
           width: double.infinity,
           decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/background/background1.png'),
-              fit: BoxFit.fill,
-            )
+              image: DecorationImage(
+                image: AssetImage('assets/background/background1.png'),
+                fit: BoxFit.fill,
+              )
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,10 +74,10 @@ class NatalChartPage extends StatelessWidget{
                           height: size.height * 0.13,
                           width: size.width * 0.25,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30.0),
-                            image:DecorationImage(
-                              image: NetworkImage(_imageLink),
-                            )
+                              borderRadius: BorderRadius.circular(30.0),
+                              image:DecorationImage(
+                                image: NetworkImage(item.profilePhoto),
+                              )
                           ),
                         ),
                       ),
@@ -79,9 +85,9 @@ class NatalChartPage extends StatelessWidget{
                         bottom: 0,
                         right: 0,
                         child: CircleAvatar(
-                          child: Icon(!gender?Icons.male:Icons.female),
+                          child: Icon(!item.gender?Icons.male:Icons.female),
                           radius: size.height * 0.015,
-                          backgroundColor: !gender?Color.fromRGBO(25,88,255,0.8):Color.fromRGBO(255,74,183,0.8),
+                          backgroundColor: !item.gender?Color.fromRGBO(25,88,255,0.8):Color.fromRGBO(255,74,183,0.8),
                         ),
                       ),
                     ],
@@ -90,7 +96,7 @@ class NatalChartPage extends StatelessWidget{
               ),
               SizedBox(height:size.height * 0.02),
               Text(
-                name,
+                item.name,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 25.0,
@@ -102,10 +108,10 @@ class NatalChartPage extends StatelessWidget{
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    InformationColumn(icon:Icons.cake,title:'Ngày Sinh',content:date,),
-                    InformationColumn(icon:Icons.watch_later,title:'Giờ Sinh',content:time,),
-                    InformationColumn(icon:Icons.circle,title:'Vĩ Độ',content:latitude.toString(),),
-                    InformationColumn(icon:Icons.radar,title:'Kinh Độ',content:longitude.toString(),),
+                    InformationColumn(icon:Icons.cake,title:'Ngày Sinh',content:getDate(item.birthDate),),
+                    InformationColumn(icon:Icons.watch_later,title:'Giờ Sinh',content:getTime(item.birthDate),),
+                    InformationColumn(icon:Icons.circle,title:'Vĩ Độ',content:item.latitude.toString()),
+                    InformationColumn(icon:Icons.radar,title:'Kinh Độ',content:item.longitude.toString(),),
                     // InformationColumn(item: _list[0]),
                     // InformationColumn(item: _list[1]),
                     // InformationColumn(item: _list[2]),
@@ -128,7 +134,7 @@ class NatalChartPage extends StatelessWidget{
               SizedBox(height: size.height * 0.02,),
 
               FutureBuilder<NatalChartModel>(
-                future: fetchNatalChartImageData(id),
+                future: fetchNatalChartImageData(item.id),
                 builder: (context,snapshot){
                   if(snapshot.hasError){
                     return Center(child: Text('Something went wrong!!'),);
@@ -137,7 +143,7 @@ class NatalChartPage extends StatelessWidget{
                       width: double.infinity,
                       height: size.height * 0.5,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(190.0),
+                          borderRadius: BorderRadius.circular(190.0),
                           image: DecorationImage(
                               image: NetworkImage('${snapshot.data!.imageLink}'),
                               fit: BoxFit.fitWidth
@@ -160,16 +166,16 @@ class NatalChartPage extends StatelessWidget{
               //   ),
               // ),
               SizedBox(height: size.height * 0.01,),
-             Container(
-               child: Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                 children: <Widget>[
-                   ZodiacColumn(item: _list1[0]),
-                   ZodiacColumn(item: _list1[1]),
-                   ZodiacColumn(item: _list1[2]),
-                 ],
-               ),
-             ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    ZodiacColumn(item: _list1[0]),
+                    ZodiacColumn(item: _list1[1]),
+                    ZodiacColumn(item: _list1[2]),
+                  ],
+                ),
+              ),
               SizedBox(height: size.height*0.03),
               Container(
                 child: Row(
@@ -210,7 +216,7 @@ class NatalChartPage extends StatelessWidget{
               // Star(),
 
               FutureBuilder<List<PlanetInformation>>(
-                future: fetchNatalChartData(id),
+                future: fetchNatalChartData(item.id),
                 builder: (context,snapshot){
                   if(snapshot.hasError){
                     return Center(child: Text('Something went wrong!!'),);
@@ -326,21 +332,21 @@ class InformationColumn extends StatefulWidget{
 }
 
 class _InformationColumnState extends State<InformationColumn> {
-  
+
   LinearGradient getColor(){
     LinearGradient _color;
     if(widget.title.toLowerCase()=='ngày sinh'){
       _color = LinearGradient(
-        colors: [
-          Colors.white70,
-          Color.fromRGBO(85,43,242,1),
-        ],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        stops: [
-          0.0,
-          0.9
-        ]
+          colors: [
+            Colors.white70,
+            Color.fromRGBO(85,43,242,1),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [
+            0.0,
+            0.9
+          ]
       );
     }else if(widget.title.toLowerCase()=='giờ sinh'){
       _color = LinearGradient(
@@ -398,7 +404,7 @@ class _InformationColumnState extends State<InformationColumn> {
           ),
           child: Icon(
             widget.icon,
-             color: Colors.white,
+            color: Colors.white,
           ),
         ),
         SizedBox(height:size.height * 0.01),
@@ -426,7 +432,7 @@ class _InformationColumnState extends State<InformationColumn> {
 class Star extends StatelessWidget{
   PlanetInformation item;
   Star({required this.item});
-  
+
   String formatHouseName(String name){
     String formatName = '';
     if(name.toLowerCase() == 'nhà 1'){
@@ -456,7 +462,7 @@ class Star extends StatelessWidget{
     }
     return formatName;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -464,67 +470,67 @@ class Star extends StatelessWidget{
       child: Column(
         children: <Widget>[
           Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Container(
-          child: Column(
-          children: <Widget>[
-            ImageIcon(
-              NetworkImage(item.planetIcon),
-              color: Color.fromRGBO(183,88,167,1),
-            ),
-            SizedBox(height: size.height * 0.01),
-            Text(
-              item.planetName,
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 15.0,
-              ),
-            ),
-        ],
-      ),
-      ),
-            Container(
-              height: size.height * 0.05,
-              width: size.width * 0.1,
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(69,47,94,1),
-                borderRadius: BorderRadius.circular(15.0),
-                border: Border.all(color: Colors.white70),
-              ),
-              child: Center(
-                child: Text(
-                  formatHouseName(item.houseName),
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 25.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  child: Column(
+                    children: <Widget>[
+                      ImageIcon(
+                        NetworkImage(item.planetIcon),
+                        color: Color.fromRGBO(183,88,167,1),
+                      ),
+                      SizedBox(height: size.height * 0.01),
+                      Text(
+                        item.planetName,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
-            Container(
-              child: Column(
-                children: <Widget>[
-                  ImageIcon(
-                    NetworkImage(item.zodiacIcon),
-                    color: Colors.white,
+                Container(
+                  height: size.height * 0.05,
+                  width: size.width * 0.1,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(69,47,94,1),
+                    borderRadius: BorderRadius.circular(15.0),
+                    border: Border.all(color: Colors.white70),
                   ),
-                  SizedBox(height: size.height * 0.01),
-                  Text(
-                    item.zodiacName,
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 20.0,
+                  child: Center(
+                    child: Text(
+                      formatHouseName(item.houseName),
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 25.0,
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
+                Container(
+                  child: Column(
+                    children: <Widget>[
+                      ImageIcon(
+                        NetworkImage(item.zodiacIcon),
+                        color: Colors.white,
+                      ),
+                      SizedBox(height: size.height * 0.01),
+                      Text(
+                        item.zodiacName,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 20.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-        ],
-      ),
-      ),
+              ],
+            ),
+          ),
 
           Container(
             padding: EdgeInsets.all(10.0),
@@ -536,9 +542,9 @@ class Star extends StatelessWidget{
             ),
             child: Text(
                 item.content,
-            style: TextStyle(
-              color: Colors.white,
-            )),
+                style: TextStyle(
+                  color: Colors.white,
+                )),
           ),
 
         ],

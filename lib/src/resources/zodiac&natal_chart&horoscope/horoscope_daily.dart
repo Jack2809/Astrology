@@ -1,87 +1,110 @@
+import 'package:astrology/src/models/horoscope_model.dart';
+import 'package:astrology/src/repository/current_user_shared_preferences.dart';
+import 'package:astrology/src/repository/horoscope_.dart';
+import 'package:astrology/src/resources/zodiac&natal_chart&horoscope/horoscope_daily_detail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class HoroscopeDaily extends StatefulWidget{
+
+
   @override
   State<HoroscopeDaily> createState() => _HoroscopeDailyState();
 }
 
 class _HoroscopeDailyState extends State<HoroscopeDaily>{
 
-  var date = DateTime.now();
-
-  int currentPage = 3;
-
-  var _controller = PageController(initialPage: 2);
-
-  bool _isSelected0 = false;
-  bool _isSelected1 = false;
-  bool _isSelected2 = true;
-  bool _isSelected3 = false;
-  bool _isSelected4 = false;
-
-  void _onTappedBar0() {
+  bool d1 = false ;
+  bool d2 = false ;
+  bool d3 = true ;
+  bool d4 = false ;
+  bool d5 = false ;
+  
+  void onClicked(){
     setState(() {
-      currentPage = 0;
-      _isSelected0 = true;
-      _isSelected1 = false;
-      _isSelected2 = false;
-      _isSelected3 = false;
-      _isSelected4 = false;
-
+      d1 = true;
+      d2 = false;
+      d3 = false;
+      d4 = false;
+      d5 = false;
+      _selectedIndex = 0 ;
+      // _selectedDate= DateTime.now().subtract(Duration(days: 2));
     });
-    // _controller.jumpToPage(currentPage);
-    _controller.animateToPage(currentPage, duration:Duration(seconds:1), curve:Curves.linear);
+    _controller.jumpToPage(_selectedIndex);
   }
 
-  void _onTappedBar1() {
+  void onClicked1(){
     setState(() {
-      currentPage = 1;
-      _isSelected0 = false;
-      _isSelected1 = true;
-      _isSelected2 = false;
-      _isSelected3 = false;
-      _isSelected4 = false;
+      d1 = false;
+      d2 = true;
+      d3 = false;
+      d4 = false;
+      d5 = false;
+      _selectedIndex = 1 ;
+      // _selectedDate= DateTime.now().subtract(Duration(days: 1));
     });
-    // _controller.jumpToPage(currentPage);
-    _controller.animateToPage(currentPage, duration:Duration(seconds:1), curve:Curves.linear);
+    _controller.jumpToPage(_selectedIndex);
+
   }
-  void _onTappedBar2() {
+
+  void onClicked2(){
     setState(() {
-      currentPage = 2;
-      _isSelected0 = false;
-      _isSelected1 = false;
-      _isSelected2 = true;
-      _isSelected3 = false;
-      _isSelected4 = false;
+      d1 = false;
+      d2 = false;
+      d3 = true;
+      d4 = false;
+      d5 = false;
+      _selectedIndex = 2 ;
+      // _selectedDate= DateTime.now();
     });
-    // _controller.jumpToPage(currentPage);
-    _controller.animateToPage(currentPage, duration:Duration(seconds:1), curve:Curves.linear);
+    _controller.jumpToPage(_selectedIndex);
   }
-  void _onTappedBar3() {
+  void onClicked3(){
     setState(() {
-      currentPage = 3;
-      _isSelected0 = false;
-      _isSelected1 = false;
-      _isSelected2 = false;
-      _isSelected3 = true;
-      _isSelected4 = false;
+      d1 = false;
+      d2 = false;
+      d3 = false;
+      d4 = true;
+      d5 = false;
+      _selectedIndex = 3 ;
+      // _selectedDate= DateTime.now().add(Duration(days: 1));
     });
-    // _controller.jumpToPage(currentPage);
-    _controller.animateToPage(currentPage, duration:Duration(seconds:1), curve:Curves.linear);
+    _controller.jumpToPage(_selectedIndex);
   }
-  void _onTappedBar4() {
+  void onClicked4(){
     setState(() {
-      currentPage = 4;
-      _isSelected0 = false;
-      _isSelected1 = false;
-      _isSelected2 = false;
-      _isSelected3 = false;
-      _isSelected4 = true;
+      d1 = false;
+      d2 = false;
+      d3 = false;
+      d4 = false;
+      d5 = true;
+      _selectedIndex = 4 ;
+      // _selectedDate= DateTime.now().add(Duration(days: 2));
     });
-    // _controller.jumpToPage(currentPage);
-    _controller.animateToPage(currentPage, duration:Duration(seconds:1), curve:Curves.linear);
+    _controller.jumpToPage(_selectedIndex);
+
+  }
+
+   // DateTime _selectedDate = DateTime.now();
+  DateTime date = DateTime.now();
+
+  late PageController _controller ;
+
+  int _selectedIndex = 2;
+
+  int id = CurrentUser.getId()?? 0;
+
+  String formatDate(DateTime time){
+    var format = DateFormat('yyyy-MM-dd');
+    String dateFormat = format.format(time);
+    return dateFormat;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController(initialPage:_selectedIndex);
   }
 
 
@@ -103,7 +126,7 @@ class _HoroscopeDailyState extends State<HoroscopeDaily>{
         backgroundColor:Colors.transparent,
         bottomOpacity: 0.0,
         title: Text(
-          'Lá số hôm nay',
+          'Lá số hằng ngày',
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.0,
@@ -111,104 +134,128 @@ class _HoroscopeDailyState extends State<HoroscopeDaily>{
           ),
         ),
       ),
-      body: Container(
+      body:Container(
+        padding:EdgeInsets.fromLTRB(10,0,0,10),
         decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('assets/background/background1.png'),
-                fit: BoxFit.fill
-            )
+          image: DecorationImage(
+            image: AssetImage('assets/background/background1.png'),
+            fit: BoxFit.fill,
+          )
         ),
         child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
-               child: Row(
-                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                 children: <Widget>[
-                   GestureDetector(
-                     onTap: _onTappedBar0,
-                       child: MyDate(item: date.subtract(Duration(days: 2)),isSelected:_isSelected0,)
-                   ),
-                   GestureDetector(
-                     onTap: _onTappedBar1,
-                       child: MyDate(item: date.subtract(Duration(days: 1)),isSelected:_isSelected1)
-                   ),
-                   GestureDetector(
-                     onTap: _onTappedBar2,
-                       child: MyDate(item: date,isSelected:_isSelected2)
-                   ),
-                   GestureDetector(
-                     onTap: _onTappedBar3,
-                       child: MyDate(item: date.add(Duration(days: 1)),isSelected:_isSelected3)
-                   ),
-                   GestureDetector(
-                     onTap: _onTappedBar4,
-                       child: MyDate(item: date.add(Duration(days: 2)),isSelected:_isSelected4)
-                   ),
-                 ],
-               ),
-              ),
+          Container(
+          height: size.height * 0.1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                GestureDetector(onTap:(){onClicked();},child: DateItem(time: date.subtract(Duration(days: 2)),isSelected: d1)),
+                GestureDetector(onTap:(){onClicked1();},child: DateItem(time: date.subtract(Duration(days: 1)),isSelected: d2)),
+                GestureDetector(onTap:(){onClicked2();},child: DateItem(time: date,isSelected: d3)),
+                GestureDetector(onTap:(){onClicked3();},child: DateItem(time: date.add(Duration(days: 1)),isSelected: d4)),
+                GestureDetector(onTap:(){onClicked4();},child: DateItem(time: date.add(Duration(days: 2)),isSelected: d5)),
+              ],
+            ),
+          ),
 
-              Expanded(
-                child: Container(
-                  // height: size.height * 0.1,
-                  // width: double.infinity,
-                  child: PageView(
-                    controller: _controller,
-                    physics: NeverScrollableScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    children: <Widget>[
-                      Text('Page 1',style:TextStyle(color: Colors.white),),
-                      Text('Page 2',style:TextStyle(color: Colors.white),),
-                      Text('Page 3',style:TextStyle(color: Colors.white),),
-                      Text('Page 4',style:TextStyle(color: Colors.white),),
-                      Text('Page 5',style:TextStyle(color: Colors.white),),
-                    ],
-                  ),
+          Expanded(
+            child: PageView(
+              controller: _controller,
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                FutureBuilder<HoroscopeModel>(
+                  future: fetchHoroscopeData(id,formatDate(date.subtract(Duration(days: 2)))),
+                  builder: (context,snapshot){
+                    if(snapshot.hasError){
+                      return Center(child: Text('Something went wrong!!'),);
+                    }else if (snapshot.hasData){
+                      return HoroscopeView(item: snapshot.data!);
+                    }else{
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                  },
                 ),
-              ),
+                FutureBuilder<HoroscopeModel>(
+                  future: fetchHoroscopeData(id,formatDate(date.subtract(Duration(days: 1)))),
+                  builder: (context,snapshot){
+                    if(snapshot.hasError){
+                      return Center(child: Text('Something went wrong!!'),);
+                    }else if (snapshot.hasData){
+                      return HoroscopeView(item: snapshot.data!);
+                    }else{
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                  },
+                ),
+                FutureBuilder<HoroscopeModel>(
+                  future: fetchHoroscopeData(id,formatDate(date)),
+                  builder: (context,snapshot){
+                    if(snapshot.hasError){
+                      return Center(child: Text('Something went wrong!!'),);
+                    }else if (snapshot.hasData){
+                      return HoroscopeView(item: snapshot.data!);
+                    }else{
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                  },
+                ),
+                FutureBuilder<HoroscopeModel>(
+                  future: fetchHoroscopeData(id,formatDate(date.add(Duration(days: 1)))),
+                  builder: (context,snapshot){
+                    if(snapshot.hasError){
+                      return Center(child: Text('Something went wrong!!'),);
+                    }else if (snapshot.hasData){
+                      return HoroscopeView(item: snapshot.data!);
+                    }else{
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                  },
+                ),
+                FutureBuilder<HoroscopeModel>(
+                  future: fetchHoroscopeData(id,formatDate(date.add(Duration(days: 2)))),
+                  builder: (context,snapshot){
+                    if(snapshot.hasError){
+                      return Center(child: Text('Something went wrong!!'),);
+                    }else if (snapshot.hasData){
+                      return HoroscopeView(item: snapshot.data!);
+                    }else{
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                  },
+                ),
 
-
-
+              ],
+            ),
+          ),
             ],
           ),
         ),
       ),
 
+
     );
   }
 }
 
-class MyDate extends StatelessWidget{
-  DateTime item;
+
+class DateItem extends StatefulWidget{
+  DateTime time;
   bool isSelected;
-  MyDate({required this.item,required this.isSelected});
+  DateItem({required this.time,required this.isSelected});
 
+  @override
+  State<DateItem> createState() => _DateItemState();
+}
 
+class _DateItemState extends State<DateItem> {
+  String getDay(DateTime time){
+   String day = DateFormat.E().format(time);
+   return day;
+  }
 
-  String getCurrentDay(DateTime date){
-    String day = '';
-    DateTime currentDay = DateTime.now();
-    if(date.weekday == currentDay.weekday){
-      day = 'Today';
-    }
-    else if(date.weekday == 1){
-      day = 'Mon';
-    } else if(date.weekday == 2){
-      day = 'Tues';
-    }else if(date.weekday == 3){
-      day = 'Wed';
-    }else if(date.weekday == 4){
-      day = 'Thus';
-    }else if(date.weekday == 5){
-      day = 'Fri';
-    }else if(date.weekday == 6){
-      day = 'Sat';
-    }else{
-      day = 'Sun';
-    }
+  String getTheDay(DateTime time){
+    String day = DateFormat.d().format(time);
     return day;
   }
 
@@ -216,43 +263,130 @@ class MyDate extends StatelessWidget{
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      height: size.height * 0.09,
-      width: size.width * 0.15,
+      // height: size.height * 0.05,
+      width: size .width * 0.15,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15.0),
+        border: Border.all(color:Colors.white70),
       ),
       child: Column(
-        children: [
+        children: <Widget>[
           Text(
-            getCurrentDay(item),
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize:size.height * 0.02,
-            ),
-          ),
-      SizedBox(height: size.height * 0.01),
-      Container(
-        child: (isSelected)?CircleAvatar(
-          backgroundColor: Color.fromRGBO(255,86,184,1),
-          child: Text(
-            item.day.toString(),
+            getDay(widget.time),
             style: TextStyle(
               color: Colors.white,
-              fontSize:size.height * 0.02,
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
             ),
-              ),
-        ):Text(
-          item.day.toString(),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize:size.height * 0.02,
           ),
-        ),
-      ),
+          SizedBox(height:size.height * 0.01,),
+          widget.isSelected?CircleAvatar(
+            backgroundColor: Colors.pink,
+            child: Text(
+              getTheDay(widget.time),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ):Text(
+            getTheDay(widget.time),
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class HoroscopeView extends StatelessWidget{
+  HoroscopeModel item;
+  HoroscopeView({required this.item});
+  @override
+  Widget build(BuildContext context) {
+    List<HoroscopeItem> list = [
+      item.routine[0],
+      item.thinking[0],
+      item.creativity[0],
+      item.spirituality[0],
+      item.socialLife[0],
+      item.sexAndLove[0],
+      item.self[0],
+    ];
+    List<List<HoroscopeItem>> list1 =[
+      item.routine,
+      item.thinking,
+      item.creativity,
+      item.spirituality,
+      item.socialLife,
+      item.sexAndLove,
+      item.self
+    ];
+    return ListView.separated(
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(8),
+      itemCount: list.length,
+      itemBuilder: (BuildContext context, int index) {
+          return HoroscopeItemView(item: list[index],list:list1[index],);
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(thickness: 1,color: Colors.white),
+    );
+  }
+
+}
+
+class HoroscopeItemView extends StatelessWidget{
+  HoroscopeItem item;
+  List<HoroscopeItem> list;
+  HoroscopeItemView({required this.item,required this.list});
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(context,MaterialPageRoute(builder: (context) => HoroscopeViewDetail(list: list)));
+      },
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              item.lifeAttributeName,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 25.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              item.content,
+              style: TextStyle(
+                color: Colors.white70,
+              ),
+            ),
+            Row(
+              children: <Widget>[
+                Text(
+                  'Detail',
+                  style: TextStyle(
+                    color: Colors.pink,
+                    fontSize:20
+                  ),
+                ),
+                SizedBox(width:10.0),
+                Icon(Icons.arrow_forward,color: Colors.pink,size:15),
+              ],
+            )
+
+          ],
+        ),
       ),
     );
   }
 
 }
+

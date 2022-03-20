@@ -1,6 +1,10 @@
+import 'dart:developer';
+
+import 'package:astrology/src/repository/current_user_shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'src/repository/google_sign_in.dart';
 import 'src/resources/login&register/login.dart';
@@ -11,7 +15,9 @@ import 'package:firebase_core/firebase_core.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
   await Firebase.initializeApp();
+  await CurrentUser.init();
   runApp(MyAstrology());
 }
 

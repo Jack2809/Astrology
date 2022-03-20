@@ -1,27 +1,25 @@
-import 'dart:developer';
-
-import 'package:astrology/src/repository/zodiac_.dart';
+import 'package:astrology/src/repository/planet_.dart';
 import 'package:flutter/material.dart';
-import '../../models/zodiac_model.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:http/http.dart' as http;
+
+import '../../models/planet_model.dart';
 
 
-
-class ZodiacDetail extends StatefulWidget{
+class PlanetDetail extends StatefulWidget{
   int id;
-  ZodiacDetail({required this.id});
+  PlanetDetail({required this.id});
 
   @override
-  State<ZodiacDetail> createState() => _ZodiacDetailState();
+  State<PlanetDetail> createState() => _PlanetDetailState();
 }
 
-class _ZodiacDetailState extends State<ZodiacDetail> {
-  late Future<ZodiacModel> zodiac;
+class _PlanetDetailState extends State<PlanetDetail> {
+  late Future<PlanetModel> planet;
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    zodiac = fetchZodiacDetailData(widget.id);
+    planet = fetchPlanetDetailData(widget.id);
   }
   @override
   Widget build(BuildContext context) {
@@ -46,19 +44,19 @@ class _ZodiacDetailState extends State<ZodiacDetail> {
           padding: EdgeInsets.fromLTRB(15.0,size.height * 0.1,15.0,20.0),
           decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/background/background.png'),
+                  image: AssetImage('assets/background/background2.png'),
                   fit: BoxFit.fill
               )
           ),
-          child: FutureBuilder<ZodiacModel>(
-            future: zodiac,
+          child: FutureBuilder<PlanetModel>(
+            future: planet,
             builder: (context,snapshot){
               if(snapshot.hasError){
                 return Center(child:Text('something went wrong!!',style: TextStyle(color: Colors.white)),);
               }else if(snapshot.hasData){
                 return ShowDetail(item:snapshot.data!);
               }else {
-                return Container(height:size.height,child: Center(child: CircularProgressIndicator(),));
+                return Container(height: size.height,child: Center(child: CircularProgressIndicator(),));
               }
             },
           ),
@@ -69,10 +67,8 @@ class _ZodiacDetailState extends State<ZodiacDetail> {
   }
 }
 
-
-
 class ShowDetail extends StatelessWidget{
-  ZodiacModel item;
+  PlanetModel item;
   ShowDetail({required this.item});
   @override
   Widget build(BuildContext context) {
@@ -101,7 +97,7 @@ class ShowDetail extends StatelessWidget{
             ),
           ),
           Text(
-            item.zodiacDayStart.toString()+ '/' +item.zodiacMonthStart.toString()+ '-' +item.zodiacDayEnd.toString()+ '/' +item.zodiacMonthEnd.toString(),
+            item.title,
             style: TextStyle(
               fontSize:15.0,
               color: Colors.white70,
@@ -110,7 +106,7 @@ class ShowDetail extends StatelessWidget{
           ),
           SizedBox(height: 15.0,),
           Text(
-            'Mô tả về '+item.name,
+            'Sơ lược về '+item.name,
             style: TextStyle(
               color: Colors.white,
               fontSize: 20.0,
@@ -119,7 +115,7 @@ class ShowDetail extends StatelessWidget{
           ),
           SizedBox(height: 10.0,),
           Text(
-            item.descreiption,
+            item.description,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,

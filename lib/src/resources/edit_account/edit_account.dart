@@ -1,3 +1,4 @@
+import 'package:astrology/src/repository/current_user_shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -13,10 +14,16 @@ class EditAccountPage extends StatefulWidget{
 class _EditAccountPageState extends State<EditAccountPage> {
   XFile? image;
 
-  String _imageLink = 'https://scontent.fsgn2-4.fna.fbcdn.net/v/t31.18172-8/16423117_671178093084590_8683797133784660545_o.jpg?_nc_cat=109&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=_oOW4y6GZ0sAX8pL2BX&tn=8dDZ6yBmARp1i9Mt&_nc_ht=scontent.fsgn2-4.fna&oh=00_AT_HiU2oIuAwvz28e-oZiTwWp3I_VP-g32NHc9R8yrYY3Q&oe=622799C2';
-  bool _isMale = true ;
-  List<AccountInformation> _list = [
-    AccountInformation(icon:Icons.person,title:'Họ và tên',content:'Hiếu Nguyễn'),
+  String name = CurrentUser.getCurrentUserName() ?? '';
+
+  String phoneNumber = CurrentUser.getPhoneNumber() ?? '';
+
+  String _imageLink = CurrentUser.getAvatarLink() ?? '';
+
+  bool _isFemale = CurrentUser.getGender() ?? false ;
+
+  final List<AccountInformation> _list = [
+    AccountInformation(icon:Icons.person,title:'Họ và tên',content:'Hieu Nguyen'),
     AccountInformation(icon:Icons.phone,title:'Mobile',content:'0972279977'),
     AccountInformation(icon:Icons.cake,title:'Ngày sinh',content:'28-09-2000'),
     AccountInformation(icon:Icons.watch_later,title:'Giờ sinh',content:'12:52:52'),
@@ -33,13 +40,13 @@ class _EditAccountPageState extends State<EditAccountPage> {
 
   void _onClicked(){
     setState(() {
-      _isMale = true;
+      _isFemale = false;
     });
   }
 
   void _onClicked1(){
     setState(() {
-      _isMale = false;
+      _isFemale = true;
     });
   }
 
@@ -143,7 +150,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                         height: size.height *0.05,
                         width: size.width *0.43 ,
                         decoration: BoxDecoration(
-                          color: _isMale?Color.fromRGBO(116,55, 245,1):Color.fromRGBO(38, 30, 63, 1),
+                          color: !_isFemale?Color.fromRGBO(116,55, 245,1):Color.fromRGBO(38, 30, 63, 1),
                           borderRadius: BorderRadius.circular(10.0),
                           border: Border.all(color: Colors.white70),
                         ),
@@ -165,7 +172,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                         height: size.height *0.05,
                         width: size.width *0.43 ,
                         decoration: BoxDecoration(
-                          color: !_isMale?Color.fromRGBO(255,74,183,1):Color.fromRGBO(38, 30, 63, 1),
+                          color: _isFemale?Color.fromRGBO(255,74,183,1):Color.fromRGBO(38, 30, 63, 1),
                           borderRadius: BorderRadius.circular(10.0),
                           border: Border.all(color: Colors.white70),
                         ),
@@ -182,10 +189,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                   ],
                 ),
               ),
-              // AccountItem(item:_list[1]),
-              // AccountItem(item:_list[2]),
-              // AccountItem(item:_list[3]),
-              // AccountItem(item:_list[4]),
+
               SizedBox(height: size.height * 0.01,),
               AccountItem1(item:_list[1]),
               SizedBox(height: size.height * 0.01,),

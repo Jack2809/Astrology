@@ -1,24 +1,25 @@
-import 'package:astrology/src/models/zodiac_model.dart';
-import 'package:astrology/src/repository/zodiac_.dart';
 import 'package:flutter/material.dart';
+
+import '../../models/house_model.dart';
 import 'package:http/http.dart' as http;
 
-import 'zodiac_detail.dart';
+import '../../repository/house_.dart';
+import 'house_detail.dart';
 
-class ZodiacPage extends StatefulWidget{
+class HousePage extends StatefulWidget{
+
   @override
-  State<ZodiacPage> createState() => _ZodiacPageState();
+  State<HousePage> createState() => _HousePageState();
 }
 
-class _ZodiacPageState extends State<ZodiacPage> {
-  late Future<List<ZodiacModel>> zodiacList;
-
+class _HousePageState extends State<HousePage> {
+  late Future<List<HouseModel>> houseList;
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    zodiacList = fetchGeneralZodiacData(http.Client());
+    houseList = fetchGeneralHouseData(http.Client());
   }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -37,7 +38,7 @@ class _ZodiacPageState extends State<ZodiacPage> {
         backgroundColor:Colors.transparent,
         bottomOpacity: 0.0,
         title: Text(
-          'Cung hoàng đạo',
+          'Các Nhà',
           style: TextStyle(
             color: Colors.white,
             fontSize: 20.0,
@@ -48,17 +49,17 @@ class _ZodiacPageState extends State<ZodiacPage> {
       body: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/background/background1.png'),
+              image: AssetImage('assets/background/background2.png'),
               fit: BoxFit.fill,
             )
         ),
-        child: FutureBuilder<List<ZodiacModel>>(
-          future: zodiacList,
+        child: FutureBuilder<List<HouseModel>>(
+          future: houseList,
           builder: (context,snapshot){
             if(snapshot.hasError){
               return Center(child: Text('Something went wrong!!'),);
             }else if (snapshot.hasData){
-              return ZodiacList(zodiacModels: snapshot.data!);
+              return HouseList(houseModels: snapshot.data!);
             }else{
               return Center(child: CircularProgressIndicator(),);
             }
@@ -69,28 +70,28 @@ class _ZodiacPageState extends State<ZodiacPage> {
   }
 }
 
-class ZodiacList extends StatelessWidget{
-  const ZodiacList({Key? key,required this.zodiacModels}) : super(key:key);
+class HouseList extends StatelessWidget{
+  const HouseList({Key? key,required this.houseModels}) : super(key:key);
 
-  final List<ZodiacModel> zodiacModels;
+  final List<HouseModel> houseModels;
 
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
         scrollDirection: Axis.vertical,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
+          crossAxisCount: 2,
           // mainAxisSpacing:10.0,
           // crossAxisSpacing:5.0,
           childAspectRatio: 0.9,
         ),
-        itemCount: 12,
+        itemCount: houseModels.length,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ZodiacDetail(id:zodiacModels[index].id,)),);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => HouseDetail(id: houseModels[index].id,)),);
               },
-              child: ZodiacItem(item:zodiacModels[index],)
+              child: HouseItem(item:houseModels[index],)
           );
         }
     );
@@ -98,9 +99,9 @@ class ZodiacList extends StatelessWidget{
 
 }
 
-class ZodiacItem extends StatelessWidget{
-  ZodiacModel item;
-  ZodiacItem({required this.item});
+class HouseItem extends StatelessWidget{
+  HouseModel item;
+  HouseItem({required this.item});
 
 
 
@@ -114,43 +115,27 @@ class ZodiacItem extends StatelessWidget{
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
-            height:size.height * 0.1,
+            height:size.height * 0.2,
             decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(item.icon),
-              )
+              borderRadius: BorderRadius.circular(2000),
+                image: DecorationImage(
+                  image: NetworkImage(item.icon),
+                )
             ),
           ),
           Text(
             item.name,
+            textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+              color: Colors.white70,
+              fontWeight: FontWeight.w500,
               fontSize:20.0,
             ),
           ),
-          Text(
-            item.zodiacDayStart.toString()+ '/' +item.zodiacMonthStart.toString()+ '-' +item.zodiacDayEnd.toString()+ '/' +item.zodiacMonthEnd.toString(),
-            style: TextStyle(
-              color: Colors.white70,
-            ),
-          ),
+
         ],
       ),
     );
   }
 
 }
-
-class Zodiac{
-  String imageLink;
-  String name;
-  String startTime;
-  String endTime;
-
-  Zodiac({required this.imageLink,required this.name,required this.startTime,required this.endTime});
-
-}
-
-
-

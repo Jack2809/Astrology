@@ -1,10 +1,15 @@
+import 'package:astrology/src/repository/current_user_shared_preferences.dart';
 import 'package:astrology/src/repository/google_sign_in.dart';
+import 'package:astrology/src/repository/user_.dart';
 import 'package:astrology/src/resources/home&news&account/account.dart';
 import 'package:astrology/src/resources/home&news&account/home.dart';
 import 'package:astrology/src/resources/home&news&account/news.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
+
+import '../../models/user.dart';
 
 class MyMainPage extends StatefulWidget{
 
@@ -14,36 +19,62 @@ class MyMainPage extends StatefulWidget{
 
 class _MyMainPageState extends State<MyMainPage> {
 
+  late PageController _pageController ;
 
    int _selectedIndex = 0;
 
-  Widget pageCaller(index) {
-    switch (_selectedIndex) {
-      case 0:
-        return HomePage();
-      case 1:
-        return NewsPage();
-      case 2:
-        return AccountPage();
+   late Future<UserModel> currentUser;
 
-      default:
-        return HomePage();
-    }
-  }
+
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.animateToPage(index, duration:Duration(milliseconds:500), curve: Curves.easeIn);
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      initialPage: _selectedIndex,
+    );
+    currentUser = GoogleSignInProvider().getCurrentUser();
+    CurrentUser.saveCurrentUser(currentUser);
   }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: pageCaller(_selectedIndex),
+      body: FutureBuilder<UserModel>(
+        future: currentUser,
+        builder: (context,snapshot){
+          if(snapshot.hasError){
+            return Center(child: Text('Something went wrong!!'),);
+          }else if (snapshot.hasData){
+            return PageView(
+              controller: _pageController,
+              onPageChanged: (newPage){
+                setState(() {
+                  _selectedIndex = newPage;
+                });
+              },
+              children: [
+                // HomePage(),
+                HomePage(),
+                NewsPage(),
+                AccountPage(profileList:snapshot.data!.profileList),
+              ],
+            );
+          }else{
+            return Center(child: CircularProgressIndicator(),);
+          }
+        },
       ),
+
 
 
       bottomNavigationBar:BottomNavigationBar(

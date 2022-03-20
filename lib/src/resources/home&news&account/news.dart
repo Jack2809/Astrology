@@ -1,13 +1,12 @@
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:astrology/src/models/news_model.dart';
+import 'package:astrology/src/repository/news_.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class NewsPage extends StatelessWidget{
-
-  List<Horoscope> _list = [
-    Horoscope(title: 'Lá số hôm nay',content:'dòng người vội vàng bước qua ,chợt như chiếc hôn thế thôi nà',date:'1-1-2000',zodiacType:'Aries',horoscopeType:true),
-    Horoscope(title: 'Lá số tuần này',content:'dòng người vội vàng bước qua ,chợt như chiếc hôn thế thôi nà',date:'1-1-2000',zodiacType:'Aries',horoscopeType: false)
-  ];
 
   List<HoroscopeFilter> _list1 = [
     HoroscopeFilter(name: 'Aries', status: false),
@@ -66,27 +65,6 @@ class NewsPage extends StatelessWidget{
             ),
             SizedBox(height:size.height *0.02,),
 
-            Container(
-              child: CarouselSlider(
-                items: [
-                  MyHoroscope(item: _list[0],),
-                  MyHoroscope(item: _list[1]),
-                ],
-                options: CarouselOptions(
-                  height: size.height  * 0.3,
-                  aspectRatio: 2.0,
-                  enlargeCenterPage: true,
-                  enableInfiniteScroll: false,
-                  initialPage: 0,
-                  autoPlay: true,
-                  autoPlayAnimationDuration: Duration(seconds: 5),
-                ),
-
-
-                ),
-            ),
-
-            SizedBox(height: size.height * 0.03,),
 
             GestureDetector(
               onTap: (){
@@ -174,7 +152,7 @@ class NewsPage extends StatelessWidget{
                     Icon(Icons.document_scanner,color: Colors.white,),
                     SizedBox(width:size.width* 0.03,),
                     Text(
-                      'Chọn doanh mục',
+                      'Chọn danh mục',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -187,14 +165,18 @@ class NewsPage extends StatelessWidget{
               ),
             ),
 
-            SizedBox(height:size.height* 0.02,),
-            NewPost(),
-            SizedBox(height:size.height* 0.02,),
-            NewPost(),
-            SizedBox(height:size.height* 0.02,),
-            NewPost(),
-            SizedBox(height:size.height* 0.02,),
-            NewPost(),
+            FutureBuilder<List<NewsModel>>(
+              future: fetchNewsData(http.Client()),
+              builder: (context,snapshot){
+                if(snapshot.hasError){
+                  return Center(child: Text('Something went wrong!!'),);
+                }else if(snapshot.hasData){
+                  return NewsList(newsModels: snapshot.data!);
+                }else{
+                  return Container(height:size.height,child: Center(child: CircularProgressIndicator(),));
+                }
+              },
+            ),
 
 
           ],
@@ -203,6 +185,27 @@ class NewsPage extends StatelessWidget{
     );
 
 
+  }
+
+}
+
+class NewsList extends StatelessWidget{
+  const NewsList({Key? key,required this.newsModels}) : super(key:key);
+
+  final List<NewsModel> newsModels;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(8),
+      itemCount: newsModels.length,
+      itemBuilder: (BuildContext context, int index) {
+        return NewPost(item: newsModels[index]);
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+    );
   }
 
 }
@@ -303,148 +306,15 @@ class _HoroscopeBarState extends State<HoroscopeBar> {
 }
 
 
-class MyHoroscope extends StatelessWidget{
-  Horoscope item;
-  MyHoroscope({required this.item});
+class MyNewsDetail extends StatelessWidget{
+
+  NewsModel item;
+  MyNewsDetail({required this.item});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MyHoroscopeDetail(item: item,)),);
-      },
-      child: Container(
-        padding:EdgeInsets.all(size.height * 0.02),
-        height: size.height * 0.4,
-        width: size.width * 0.8,
-        decoration: BoxDecoration(
-          gradient: item.horoscopeType?LinearGradient(
-            colors: [
-              Color.fromRGBO(31,85,102,1),
-              Color.fromRGBO(43,31,133,1),
-            ],
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            stops: [
-              0.1,
-              0.8,
-            ],
-
-          ):LinearGradient(
-            colors: [
-              Color.fromRGBO(153,40,133,1),
-              Color.fromRGBO(42,24,131,1),
-            ],
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            stops: [
-              0.1,
-              0.8,
-            ],
-
-          ),
-          // color: Color.fromRGBO(38, 56, 119, 1),
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: [
-                ImageIcon(
-                  item.horoscopeType?AssetImage('assets/news/magic_cards1.png'):AssetImage('assets/news/magic_cards2.png'),
-                  color: Colors.white,
-                ),
-                SizedBox(width:size.width * 0.01,),
-                Text(
-                  item.title,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: size.width * 0.05,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height:size.height *0.065),
-            Text(
-              item.content,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize:size.height * 0.02,
-                color:Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ButtonBar(
-              alignment: MainAxisAlignment.start,
-              children: [
-                ElevatedButton(
-                    onPressed: (){},
-                    child:Text(
-                      item.zodiacType,
-                      style:TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Color.fromRGBO(116,55,245,1)),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18.0),
-                                side: BorderSide(color:Color.fromRGBO(116,55,245,1)),
-                            )
-                        )
-                    )
-                ),
-
-                ElevatedButton(
-                    onPressed: (){},
-                    child:Text(
-                      item.date,
-                      style:TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Color.fromRGBO(85,81,154,1)),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                              side: BorderSide(color:Color.fromRGBO(85,81,154,1)),
-                            )
-                        )
-                    )
-                ),
-              ],
-            ),
-
-          ],
-        ),
-      ),
-    );
-  }
-
-}
-
-class Horoscope {
-  String title;
-  String content;
-  String zodiacType;
-  bool horoscopeType;
-  String date;
-  Horoscope({required this.title,required this.content,required this.zodiacType,required this.horoscopeType,required this.date});
-}
-
-class MyHoroscopeDetail extends StatelessWidget{
-
-  Horoscope item;
-  MyHoroscopeDetail({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    String formatDate = DateFormat.yMMMd().format(DateTime.parse(item.generateDate));
     return Scaffold(
       backgroundColor: Color.fromRGBO(109,112,122,1),
       extendBodyBehindAppBar: true,
@@ -469,7 +339,7 @@ class MyHoroscopeDetail extends StatelessWidget{
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/news/horoscope_detail.png'),
+                  image: NetworkImage(item.banner),
                   fit: BoxFit.fitWidth
                 )
               ),
@@ -477,11 +347,10 @@ class MyHoroscopeDetail extends StatelessWidget{
             Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
-                  primary: false,
                   child: Container(
                     padding: EdgeInsets.all(10.0),
                     // width: double.minPositive,
-                    height: size.height,
+                    // height: size.height,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(topLeft:Radius.circular(20),topRight:Radius.circular(20)),
                         color: Color.fromRGBO(27,18,53,1)
@@ -507,7 +376,7 @@ class MyHoroscopeDetail extends StatelessWidget{
                               ElevatedButton(
                                   onPressed: (){},
                                   child:Text(
-                                    item.zodiacType,
+                                    item.tag,
                                     style:TextStyle(
                                       color: Colors.white,
                                     ),
@@ -526,7 +395,7 @@ class MyHoroscopeDetail extends StatelessWidget{
                               ElevatedButton(
                                   onPressed: (){},
                                   child:Text(
-                                    item.date,
+                                    formatDate,
                                     style:TextStyle(
                                       color: Colors.white,
                                     ),
@@ -544,13 +413,25 @@ class MyHoroscopeDetail extends StatelessWidget{
                             ],
                           ),
                         ),
-                        Text(
-                          item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content+item.content,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.bold,
-                            fontSize:size.width * 0.04,
+                        Container(
+                          child: Html(
+
+                            data: item.htmlContent,
+                            style: {
+                              "strong":Style(
+                                color: Colors.white,
+                                fontSize:FontSize.larger,
+                              ),
+                              "p":Style(
+                                color: Colors.white70,
+                                fontSize:FontSize.large,
+                              ),
+                              "h1":Style(
+                                color: Colors.white70,
+                                fontSize:FontSize.larger,
+                              ),
+
+                            },
                           ),
                         ),
 
@@ -572,93 +453,225 @@ class MyHoroscopeDetail extends StatelessWidget{
 }
 
 class NewPost extends StatelessWidget{
+  NewsModel item;
+  NewPost({required this.item});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Container(
-      child: Row(
-        children:<Widget>[
-          Container(
-            height: size.height * 0.15,
-            width: size.width * 0.25,
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(20),
-              // image: DecorationImage(
-              //   image: AssetImage(''),
-              // ),
-            ),
-          ),
-          SizedBox(width: size.width * 0.02,),
-          Container(
-            child: Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    child: Text(
-                      'Tiêu đề tin tức mới hôm nay là blablabla',
-                      maxLines: 3,
-                      style: TextStyle(
-                        overflow: TextOverflow.ellipsis,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0
-                      ),
-                    ),
-                  ),
-                  ButtonBar(
-                    alignment: MainAxisAlignment.start,
-                    children: [
-                      ElevatedButton(
-                          onPressed: (){},
-                          child:Text(
-                            'zodiac type',
-                            style:TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Color.fromRGBO(116,55,245,1)),
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                    side: BorderSide(color:Color.fromRGBO(116,55,245,1)),
-                                  )
-                              )
-                          )
-                      ),
-
-                      ElevatedButton(
-                          onPressed: (){},
-                          child:Text(
-                            'date',
-                            style:TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Color.fromRGBO(85,81,154,1)),
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(18.0),
-                                    side: BorderSide(color:Color.fromRGBO(85,81,154,1)),
-                                  )
-                              )
-                          )
-                      ),
-                    ],
-                  ),
-                ],
+    String formatDate = DateFormat.yMMMd().format(DateTime.parse(item.generateDate));
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => MyNewsDetail(item: item,)),);
+      },
+      child: Container(
+        child: Row(
+          children:<Widget>[
+            Container(
+              height: size.height * 0.2,
+              width: size.width * 0.3,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                  image: NetworkImage(item.banner),
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
-          ),
-        ],
+            SizedBox(width: size.width * 0.02,),
+            Container(
+              child: Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: Text(
+                        item.title,
+                        maxLines: 3,
+                        style: TextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0
+                        ),
+                      ),
+                    ),
+                    ButtonBar(
+                      alignment: MainAxisAlignment.start,
+                      children: [
+                        ElevatedButton(
+                            onPressed: (){},
+                            child:Text(
+                              item.tag,
+                              style:TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(Color.fromRGBO(116,55,245,1)),
+                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18.0),
+                                      side: BorderSide(color:Color.fromRGBO(116,55,245,1)),
+                                    )
+                                )
+                            )
+                        ),
+
+                        ElevatedButton(
+                            onPressed: (){},
+                            child:Text(
+                              formatDate,
+                              style:TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(Color.fromRGBO(85,81,154,1)),
+                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18.0),
+                                      side: BorderSide(color:Color.fromRGBO(85,81,154,1)),
+                                    )
+                                )
+                            )
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
 }
+
+// class MyHoroscope extends StatelessWidget{
+//
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     Size size = MediaQuery.of(context).size;
+//     return GestureDetector(
+//       onTap: (){
+//         Navigator.push(context, MaterialPageRoute(builder: (context) => MyHoroscopeDetail(item: item,)),);
+//       },
+//       child: Container(
+//         padding:EdgeInsets.all(size.height * 0.02),
+//         height: size.height * 0.4,
+//         width: size.width * 0.8,
+//         decoration: BoxDecoration(
+//           gradient: item.horoscopeType?LinearGradient(
+//             colors: [
+//               Color.fromRGBO(31,85,102,1),
+//               Color.fromRGBO(43,31,133,1),
+//             ],
+//             begin: Alignment.topRight,
+//             end: Alignment.bottomLeft,
+//             stops: [
+//               0.1,
+//               0.8,
+//             ],
+//
+//           ):LinearGradient(
+//             colors: [
+//               Color.fromRGBO(153,40,133,1),
+//               Color.fromRGBO(42,24,131,1),
+//             ],
+//             begin: Alignment.topRight,
+//             end: Alignment.bottomLeft,
+//             stops: [
+//               0.1,
+//               0.8,
+//             ],
+//
+//           ),
+//           // color: Color.fromRGBO(38, 56, 119, 1),
+//           borderRadius: BorderRadius.circular(30.0),
+//         ),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: <Widget>[
+//             Row(
+//               children: [
+//                 ImageIcon(
+//                   item.horoscopeType?AssetImage('assets/news/magic_cards1.png'):AssetImage('assets/news/magic_cards2.png'),
+//                   color: Colors.white,
+//                 ),
+//                 SizedBox(width:size.width * 0.01,),
+//                 Text(
+//                   item.title,
+//                   style: TextStyle(
+//                     color: Colors.white,
+//                     fontWeight: FontWeight.bold,
+//                     fontSize: size.width * 0.05,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             SizedBox(height:size.height *0.065),
+//             Text(
+//               item.content,
+//               textAlign: TextAlign.center,
+//               style: TextStyle(
+//                 fontSize:size.height * 0.02,
+//                 color:Colors.white,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//             ButtonBar(
+//               alignment: MainAxisAlignment.start,
+//               children: [
+//                 ElevatedButton(
+//                     onPressed: (){},
+//                     child:Text(
+//                       item.zodiacType,
+//                       style:TextStyle(
+//                         color: Colors.white,
+//                       ),
+//                     ),
+//                     style: ButtonStyle(
+//                       backgroundColor: MaterialStateProperty.all(Color.fromRGBO(116,55,245,1)),
+//                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+//                             RoundedRectangleBorder(
+//                                 borderRadius: BorderRadius.circular(18.0),
+//                                 side: BorderSide(color:Color.fromRGBO(116,55,245,1)),
+//                             )
+//                         )
+//                     )
+//                 ),
+//
+//                 ElevatedButton(
+//                     onPressed: (){},
+//                     child:Text(
+//                       item.date,
+//                       style:TextStyle(
+//                         color: Colors.white,
+//                       ),
+//                     ),
+//                     style: ButtonStyle(
+//                         backgroundColor: MaterialStateProperty.all(Color.fromRGBO(85,81,154,1)),
+//                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+//                             RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(18.0),
+//                               side: BorderSide(color:Color.fromRGBO(85,81,154,1)),
+//                             )
+//                         )
+//                     )
+//                 ),
+//               ],
+//             ),
+//
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+// }
 

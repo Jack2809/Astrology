@@ -52,6 +52,7 @@ class HomePage extends StatelessWidget{
           }else if(snapshot.hasData){
             return MyMainPage();
           }else if(snapshot.hasError){
+            log(snapshot.error.toString());
             return Center(child:Text('Something went wrong'),);
           }else{
             return LoginPage();

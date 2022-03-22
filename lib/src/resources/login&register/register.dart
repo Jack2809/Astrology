@@ -1,14 +1,16 @@
 import 'dart:collection';
 import 'dart:developer';
-import 'package:astrology/login&register/icons.dart';
+import 'package:astrology/src/models/province.dart';
+import 'package:astrology/src/models/user.dart';
+import 'package:astrology/src/repository/google_sign_in.dart';
+import 'package:astrology/src/resources/icons.dart';
+import 'package:astrology/src/resources/login&register/login.dart';
+import 'package:astrology/src/resources/myMainPage/my_main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:group_button/group_button.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../blocs/application_bloc.dart';
-import '../models/province.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -28,20 +30,23 @@ class _RegisterPageState extends State<RegisterPage> {
   double? longitude;
 
   final fromKey=GlobalKey<FormState>();
+  UserModel? user;
 
   final auth= FirebaseAuth.instance;
   final emailController = TextEditingController();
   final passWordController= TextEditingController();
   final confirmController=TextEditingController();
   final nameController=TextEditingController();
-  final genderController= GroupButtonController();
+  final genderController= GroupButtonController(selectedIndex: 0);
   final phoneController= TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double paddingIcon = size.height * 0.009;
     double marginBetween = size.height * 0.017;
-    final applicationBloc = Provider.of<ApplicationBloc>(context);
+    final applicationBloc = Provider.of<GoogleSignInProvider>(context);
+    applicationBloc.getAllProvince();
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -164,6 +169,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       Container(
                           margin: EdgeInsets.only(top: marginBetween),
                           child: GroupButton(
+                            controller: genderController,
                             isRadio: true,
                             buttons: const ["Nam", "Nữ"],
                             onSelected: (int index, bool isSelected) {},
@@ -810,6 +816,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           //     context,
                           //     MaterialPageRoute(builder: (context)=> const MapScreen())
                           // );
+                          applicationBloc.setCurrentLocation();
                           setState(() {
                             longitude =
                                 applicationBloc.currentLocation!.longitude;
@@ -917,7 +924,21 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: OutlinedButton(
                     onPressed: () {
                       if(passWordController.text.compareTo(confirmController.text)==0){
-                        signUp(emailController.text,passWordController.text);
+                        Profile profile=Profile(
+                            id: 0,
+                            name: nameController.text,
+                            birthDate: formatDate.format(birthDate!)+'T'+'${timeOfDay!.hour.toString().padLeft(2, '0')}:${timeOfDay!.minute.toString().padLeft(2, '0')}',
+                            birthPlace: selectedProvince.toString(),
+                            profilePhoto: "",
+                            longitude: longitude!,
+                            latitude: latitude!,
+                            userId: 0,
+                            gender: genderController.selectedIndex == 0 ? true: false);
+                        applicationBloc.signUp(emailController.text,passWordController.text,profile);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
                       }else{
                         passWordController.clear();
                         confirmController.clear();
@@ -967,34 +988,5 @@ class _RegisterPageState extends State<RegisterPage> {
       else
         confirmIcon = Icon(Icons.visibility_off);
     });
-  }
-  Future<String> getIDToken() async {
-    String token = await FirebaseAuth.instance.currentUser!.getIdToken(false);
-    return token;
-  }
-  void signUp(String email, String password) async{
-    try{
-      // UserCredential userCredential=await auth.createUserWithEmailAndPassword(email: email, password: password);
-      print(email);
-      print(password);
-      UserCredential userCredential=await auth.signInWithEmailAndPassword(email: email, password: password);
-      String token= await getIDToken();
-      log(token);
-      Map<String, Object> additionalClaims = new HashMap<String, Object>();
-      additionalClaims['name']=nameController.text;
-      additionalClaims['birthDate']=formatDate.format(birthDate!)+'T'+'${timeOfDay!.hour.toString().padLeft(2, '0')}:${timeOfDay!.minute.toString().padLeft(2, '0')}';
-      additionalClaims['birthPlace']=selectedProvince!;
-      additionalClaims['latitude']=latitude!;
-      additionalClaims['longtitude']=longitude!;
-      additionalClaims['gender']=genderController.selectedIndex == 0 ? true: false;
-    }on FirebaseAuthException catch(e){
-      if (e.code == 'weak-password') {
-        print('Mật khẩu được cung cấp quá yếu.');
-      } else if (e.code == 'email-already-in-use') {
-        print('Tài khoản đã tồn tại cho email đó.');
-      }
-    }catch(e){
-      print(e);
-    }
   }
 }

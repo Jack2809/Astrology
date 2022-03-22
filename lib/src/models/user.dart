@@ -31,13 +31,15 @@ class Profile{
   final String profilePhoto;
   final double longitude;
   final double latitude;
-  final int userId;
+  late final int userId;
   final bool gender;
 
   Profile({required this.id,required this.name,required this.birthDate,
     required this.birthPlace,required this.profilePhoto,required this.longitude,required this.latitude,
     required this.userId,required this.gender});
-
+  void setUserId(int userID){
+    this.userId=userID;
+  }
   factory Profile.fromJson(Map<String,dynamic>json){
     return Profile(
         id: json['id'] as int,
@@ -52,6 +54,4 @@ class Profile{
 
     );
   }
-
-
 }

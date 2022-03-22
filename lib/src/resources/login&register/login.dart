@@ -1,4 +1,5 @@
 import 'package:astrology/src/repository/google_sign_in.dart';
+import 'package:astrology/src/resources/login&register/register.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -135,13 +136,20 @@ class LoginPage extends StatelessWidget{
 
               Container(
                 margin: EdgeInsets.only(top: 10.0,bottom: 30.0),
-                child: Text(
-                  'Đăng ký',
-                  style: TextStyle(
-                    color: Colors.white,
-
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterPage()),
+                    );
+                  },
+                  child: Text(
+                    'Đăng ký',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
                   ),
-                ),
+                )
               ),
               Container(
                 child: Row(

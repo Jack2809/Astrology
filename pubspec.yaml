@@ -43,6 +43,9 @@ dependencies:
   image_picker: ^0.8.3+1
   flutter_html: ^2.2.1
   shared_preferences: ^2.0.13
+  group_button: ^4.6.0
+  geolocator: ^8.2.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +82,8 @@ flutter:
      - assets/zodiac/
      - assets/news/
      - assets/
+     - assets/register/
+     - assets/provinces.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -92,6 +97,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
+  fonts:
+    - family: MyFlutterApp
+      fonts:
+        - asset: assets/register/MyFlutterApp.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:

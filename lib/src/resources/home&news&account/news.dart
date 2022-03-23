@@ -29,6 +29,9 @@ class NewsPage extends StatelessWidget{
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
+        constraints: BoxConstraints(
+          minHeight: size.height,minWidth: size.width
+        ),
         padding: EdgeInsets.fromLTRB(size.width * 0.03 ,size.height * 0.02,size.width * 0.03,size.height*0.03),
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -469,7 +472,7 @@ class NewPost extends StatelessWidget{
           children:<Widget>[
             Container(
               height: size.height * 0.2,
-              width: size.width * 0.3,
+              width: size.width * 0.35,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 image: DecorationImage(

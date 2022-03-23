@@ -66,7 +66,7 @@ class _MyMainPageState extends State<MyMainPage> {
                 // HomePage(),
                 HomePage(),
                 NewsPage(),
-                AccountPage(profileList:snapshot.data!.profileList),
+                AccountPage(),
               ],
             );
           }else{

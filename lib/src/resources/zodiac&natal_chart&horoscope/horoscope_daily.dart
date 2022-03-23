@@ -371,7 +371,7 @@ class HoroscopeItemView extends StatelessWidget{
             Row(
               children: <Widget>[
                 Text(
-                  'Detail',
+                  'xem chi tiết',
                   style: TextStyle(
                     color: Colors.pink,
                     fontSize:20

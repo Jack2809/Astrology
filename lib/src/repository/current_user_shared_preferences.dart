@@ -15,7 +15,9 @@ class CurrentUser {
 
    static Future<void> saveCurrentUser(Future<UserModel> user) async {
      UserModel userTemp = await user;
+     await _prefs.setInt('userId',userTemp.id);
      await _prefs.setInt('id',userTemp.profileList[0].id);
+     await _prefs.setString('place',userTemp.profileList[0].birthPlace);
      await _prefs.setString('userName',userTemp.profileList[0].name);
      await _prefs.setString('email',userTemp.email);
      await _prefs.setString('phoneNumber',userTemp.phoneNumber);
@@ -30,8 +32,28 @@ class CurrentUser {
 
    }
 
+   static Future<void> updateCurrentUser(String name,String date,String place,double latitude,double longitude,bool gender,String image) async {
+     await _prefs.setString('userName',name);
+     await _prefs.setString('date', date);
+     await _prefs.setString('place',place);
+     await _prefs.setDouble('longitude', longitude);
+     await _prefs.setDouble('latitude', latitude);
+     await _prefs.setBool('gender', gender);
+     await _prefs.setString('avatarLink',image);
+
+   }
+
+
+   static int? getUserId(){
+     return _prefs.getInt('userId');
+   }
+
    static int? getId(){
      return _prefs.getInt('id');
+   }
+
+   static String? getPlace() {
+     return _prefs.getString('place');
    }
 
    static String? getDate() {

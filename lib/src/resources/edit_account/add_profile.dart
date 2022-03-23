@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:astrology/src/repository/add_profile.dart';
 import 'package:astrology/src/repository/current_user_shared_preferences.dart';
 import 'package:astrology/src/repository/upload_image.dart';
@@ -5,51 +7,39 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'dart:async';
 
-class EditAccountPage extends StatefulWidget{
+class AddProfilePage extends StatefulWidget{
   @override
-  State<EditAccountPage> createState() => _EditAccountPageState();
+  State<AddProfilePage> createState() => _AddProfilePageState();
 }
 
-class _EditAccountPageState extends State<EditAccountPage> {
-  XFile? image;
+class _AddProfilePageState extends State<AddProfilePage> {
 
-  String _name = CurrentUser.getCurrentUserName() ?? '';
+  String _imageUrl = '';
 
-  String _date = CurrentUser.getDate() ?? '';
+  bool _isFemale = false ;
 
-  String _place = CurrentUser.getPlace() ?? '';
+  int userId = CurrentUser.getUserId() ?? 0;
 
-  double _latitude = CurrentUser.getLatitude() ?? 0.0;
 
-  double _longitude = CurrentUser.getLongitude() ?? 0.0;
-
-  String _imageLink = CurrentUser.getAvatarLink() ?? '';
-
-  bool _isFemale = CurrentUser.getGender() ?? false ;
-
-  int profileId = CurrentUser.getId() ?? 0;
 
   final List<AccountInformation> _list = [
-    AccountInformation(icon:Icons.person,title:'Họ và tên',content:'Hieu Nguyen'),
-    AccountInformation(icon:Icons.cake,title:'Ngày sinh',content:'28-09-2000'),
-    AccountInformation(icon:Icons.place,title:'Nơi sinh',content:'12:52:52'),
-    AccountInformation(icon:Icons.circle,title:'Vĩ độ',content:'Chọn địa chỉ'),
-    AccountInformation(icon:Icons.radar,title:'Kinh độ',content:'Chọn địa chỉ'),
-
-
+    AccountInformation(icon:Icons.person,title:'Họ và tên',content:'Điền họ và tên'),
+    AccountInformation(icon:Icons.cake,title:'Ngày sinh',content:'Điền ngày sinh'),
+    AccountInformation(icon:Icons.place,title:'Nơi sinh',content:'Điền nơi sinh'),
+    AccountInformation(icon:Icons.circle,title:'Vĩ Độ',content:'Điền vĩ độ'),
+    AccountInformation(icon:Icons.radar,title:'Kinh Độ',content:'Điền kinh độ'),
   ];
 
   Future pickImage() async{
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if(image == null) return;
-    final res = await uploadImage(image.path);
+    String res= await uploadImage(image.path);
     setState(() {
-      _imageLink = res ;
+      _imageUrl = res;
     });
-
+    // log('image URL :'+imageUrl);
   }
 
   void _onClicked(){
@@ -65,15 +55,15 @@ class _EditAccountPageState extends State<EditAccountPage> {
   }
 
   final _nameController = TextEditingController();
-  String name = '';
+  String _name = '';
   final _dateController = TextEditingController();
-  String date = '';
+  String _date = '';
   final _placeController = TextEditingController();
-  String place = '';
+  String _place = '';
   final _latitudeController = TextEditingController();
-  double latitude = 0.0;
+  double _latitude = 0.0;
   final _longitudeController = TextEditingController();
-  double longitude = 0.0;
+  double _longitude = 0.0;
 
   @override
   void dispose() {
@@ -85,11 +75,9 @@ class _EditAccountPageState extends State<EditAccountPage> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Color.fromRGBO(27,18,53,1),
@@ -102,7 +90,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
         ),
         centerTitle: true,
         title: Text(
-          'Chỉnh sửa hồ sơ',
+          'Thêm hồ sơ',
           style: TextStyle(
             fontSize: 17.0,
             color: Colors.white,
@@ -122,44 +110,17 @@ class _EditAccountPageState extends State<EditAccountPage> {
                   )
               ),
               onPressed: (){
-                name = _nameController.text;
-                if(name.isEmpty){
-                  setState(() {
-                    name = _name;
-                  });
-                }
-                date =_dateController.text;
-                if(date.isEmpty){
-                  setState(() {
-                    date = _date;
-                  });
-                }
-                place = _placeController.text;
-                if(place.isEmpty){
-                  setState(() {
-                    place=_place;
-                  });
-                }
-                latitude = double.parse(_latitudeController.text);
-                if(latitude == 0){
-                  setState(() {
-                    latitude = _latitude;
-                  });
-                }
-                longitude = double.parse(_longitudeController.text);
-                if(longitude == 0){
-                  setState(() {
-                    longitude=_longitude;
-                  });
-                }
-                updateProfile(profileId, name, date, place, latitude, longitude,_isFemale,_imageLink);
+                _name = _nameController.text;
+                _date =_dateController.text;
+                _place = _placeController.text;
+                _latitude = double.parse(_latitudeController.text);
+                _longitude = double.parse(_longitudeController.text);
+                addProfile(_name, _date,_place,_latitude,_longitude,_isFemale,_imageUrl,userId);
                 dispose();
-                // CurrentUser.updateCurrentUser(name, date, place, latitude, longitude, _isFemale, _imageLink);
                 Navigator.pop(context);
-
               },
               child: Text(
-                'Done',
+                'Add',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -184,7 +145,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15.0),
                     image: DecorationImage(
-                      image: NetworkImage(_imageLink),
+                      image: NetworkImage(_imageUrl),
                       fit: BoxFit.fill,
                     ),
                   ),
@@ -194,7 +155,10 @@ class _EditAccountPageState extends State<EditAccountPage> {
                         bottom:0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: () =>pickImage(),
+                          onTap: () {
+                            pickImage();
+                            // uploadImage(path);
+                          },
                           child: CircleAvatar(
                             backgroundColor: Colors.white,
                             child: Icon(Icons.camera_alt,color:Colors.black,),
@@ -207,7 +171,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                 ),
               ),
               SizedBox(height: size.height * 0.03,),
-        /*Name TextField*/
+              /* Name TextField*/
         Container(
             height: 60,
             decoration: BoxDecoration(
@@ -227,7 +191,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                     child: Container(
                       color: Color.fromRGBO(0, 0, 0, 0.3),
                       child: Icon(
-                        _list[0].icon,
+                        Icons.person,
                         size: 40,
                         color: Colors.white,
                       ),
@@ -244,7 +208,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                         padding: EdgeInsets.only(top: 2),
                         height: 17,
                         child: Text(
-                          _list[0].title,
+                          'Ho và Tên',
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             decoration: TextDecoration.none,
@@ -261,7 +225,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                               style: TextStyle(color: Colors.white, fontSize: 20),
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: _name,
+                                hintText: 'Điền vào tên',
                                 hintStyle: TextStyle(color: Colors.white, fontSize: 20),
                               ),
                             ),
@@ -331,282 +295,280 @@ class _EditAccountPageState extends State<EditAccountPage> {
 
               SizedBox(height: size.height * 0.01,),
               /*Date TextField*/
-              Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(color:Colors.white70),
-                    color: Color.fromRGBO(250, 250, 250, 0.1),
+        Container(
+            height: 60,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              border: Border.all(color:Colors.white70),
+              color: Color.fromRGBO(250, 250, 250, 0.1),
+            ),
+            child: Row(
+              // crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                //Icon
+                Container(
+                  padding: EdgeInsets.all(8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      color: Color.fromRGBO(0, 0, 0, 0.3),
+                      child: Icon(
+                        _list[1].icon,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  child: Row(
-                    // crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                ),
+                //Column
+                Expanded(child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      //Icon
                       Container(
-                        padding: EdgeInsets.all(8),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Container(
-                            color: Color.fromRGBO(0, 0, 0, 0.3),
-                            child: Icon(
-                              _list[1].icon,
-                              size: 40,
-                              color: Colors.white,
-                            ),
+                        padding: EdgeInsets.only(top: 2),
+                        height: 17,
+                        child: Text(
+                          _list[1].title,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            decoration: TextDecoration.none,
+                            color: Colors.white38,
+                            fontSize: 14.0,
                           ),
                         ),
                       ),
-                      //Column
-                      Expanded(child: Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.only(top: 2),
-                              height: 17,
-                              child: Text(
-                                _list[1].title,
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  decoration: TextDecoration.none,
-                                  color: Colors.white38,
-                                  fontSize: 14.0,
-                                ),
+                      Container(
+                          child: SizedBox(
+                            height: 24,
+                            child: TextField(
+                              controller: _dateController,
+                              style: TextStyle(color: Colors.white, fontSize: 20),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: _list[1].content,
+                                hintStyle: TextStyle(color: Colors.white, fontSize: 20),
                               ),
                             ),
-                            Container(
-                                child: SizedBox(
-                                  height: 24,
-                                  child: TextField(
-                                    controller: _dateController,
-                                    style: TextStyle(color: Colors.white, fontSize: 20),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: _date,
-                                      hintStyle: TextStyle(color: Colors.white, fontSize: 20),
-                                    ),
-                                  ),
-                                )
-                            ),
-                          ],
-                        ),
-                      ),),
-                      //icon
-
+                          )
+                      ),
                     ],
-                  )
-              ),
+                  ),
+                ),),
+                //icon
+
+              ],
+            )
+        ),
               SizedBox(height: size.height * 0.01,),
-              /*Place TextField*/
-              Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(color:Colors.white70),
-                    color: Color.fromRGBO(250, 250, 250, 0.1),
+        /*Place TextField*/
+        Container(
+            height: 60,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              border: Border.all(color:Colors.white70),
+              color: Color.fromRGBO(250, 250, 250, 0.1),
+            ),
+            child: Row(
+              // crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                //Icon
+                Container(
+                  padding: EdgeInsets.all(8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      color: Color.fromRGBO(0, 0, 0, 0.3),
+                      child: Icon(
+                        _list[2].icon,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  child: Row(
-                    // crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                ),
+                //Column
+                Expanded(child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      //Icon
                       Container(
-                        padding: EdgeInsets.all(8),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Container(
-                            color: Color.fromRGBO(0, 0, 0, 0.3),
-                            child: Icon(
-                              _list[2].icon,
-                              size: 40,
-                              color: Colors.white,
-                            ),
+                        padding: EdgeInsets.only(top: 2),
+                        height: 17,
+                        child: Text(
+                          _list[2].title,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            decoration: TextDecoration.none,
+                            color: Colors.white38,
+                            fontSize: 14.0,
                           ),
                         ),
                       ),
-                      //Column
-                      Expanded(child: Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.only(top: 2),
-                              height: 17,
-                              child: Text(
-                                _list[2].title,
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  decoration: TextDecoration.none,
-                                  color: Colors.white38,
-                                  fontSize: 14.0,
-                                ),
+                      Container(
+                          child: SizedBox(
+                            height: 24,
+                            child: TextField(
+                              controller: _placeController,
+                              style: TextStyle(color: Colors.white, fontSize: 20),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: _list[2].content,
+                                hintStyle: TextStyle(color: Colors.white, fontSize: 20),
                               ),
                             ),
-                            Container(
-                                child: SizedBox(
-                                  height: 24,
-                                  child: TextField(
-                                    controller: _placeController,
-                                    style: TextStyle(color: Colors.white, fontSize: 20),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: _place,
-                                      hintStyle: TextStyle(color: Colors.white, fontSize: 20),
-                                    ),
-                                  ),
-                                )
-                            ),
-                          ],
-                        ),
-                      ),),
-                      //icon
-
+                          )
+                      ),
                     ],
-                  )
-              ),
+                  ),
+                ),),
+                //icon
+
+              ],
+            )
+        ),
               SizedBox(height: size.height * 0.01,),
-              /*Latitude TextField*/
-              Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(color:Colors.white70),
-                    color: Color.fromRGBO(250, 250, 250, 0.1),
+        /*Latitude TextField*/
+        Container(
+            height: 60,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              border: Border.all(color:Colors.white70),
+              color: Color.fromRGBO(250, 250, 250, 0.1),
+            ),
+            child: Row(
+              // crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                //Icon
+                Container(
+                  padding: EdgeInsets.all(8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      color: Color.fromRGBO(0, 0, 0, 0.3),
+                      child: Icon(
+                        _list[3].icon,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  child: Row(
-                    // crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                ),
+                //Column
+                Expanded(child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      //Icon
                       Container(
-                        padding: EdgeInsets.all(8),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Container(
-                            color: Color.fromRGBO(0, 0, 0, 0.3),
-                            child: Icon(
-                              _list[3].icon,
-                              size: 40,
-                              color: Colors.white,
-                            ),
+                        padding: EdgeInsets.only(top: 2),
+                        height: 17,
+                        child: Text(
+                          _list[3].title,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            decoration: TextDecoration.none,
+                            color: Colors.white38,
+                            fontSize: 14.0,
                           ),
                         ),
                       ),
-                      //Column
-                      Expanded(child: Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.only(top: 2),
-                              height: 17,
-                              child: Text(
-                                _list[3].title,
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  decoration: TextDecoration.none,
-                                  color: Colors.white38,
-                                  fontSize: 14.0,
-                                ),
+                      Container(
+                          child: SizedBox(
+                            height: 24,
+                            child: TextField(
+                              controller: _latitudeController,
+                              style: TextStyle(color: Colors.white, fontSize: 20),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: _list[3].content,
+                                hintStyle: TextStyle(color: Colors.white, fontSize: 20),
                               ),
                             ),
-                            Container(
-                                child: SizedBox(
-                                  height: 24,
-                                  child: TextField(
-                                    keyboardType: TextInputType.number,
-                                    controller: _latitudeController,
-                                    style: TextStyle(color: Colors.white, fontSize: 20),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: _latitude.toString(),
-                                      hintStyle: TextStyle(color: Colors.white, fontSize: 20),
-                                    ),
-                                  ),
-                                )
-                            ),
-                          ],
-                        ),
-                      ),),
-                      //icon
-
+                          )
+                      ),
                     ],
-                  )
-              ),
+                  ),
+                ),),
+                //icon
+
+              ],
+            )
+        ),
               SizedBox(height: size.height * 0.01,),
-              /*longitude TextField*/
-              Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    border: Border.all(color:Colors.white70),
-                    color: Color.fromRGBO(250, 250, 250, 0.1),
+        /* Longitude TextField */
+        Container(
+            height: 60,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              border: Border.all(color:Colors.white70),
+              color: Color.fromRGBO(250, 250, 250, 0.1),
+            ),
+            child: Row(
+              // crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                //Icon
+                Container(
+                  padding: EdgeInsets.all(8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      color: Color.fromRGBO(0, 0, 0, 0.3),
+                      child: Icon(
+                        _list[4].icon,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  child: Row(
-                    // crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                ),
+                //Column
+                Expanded(child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      //Icon
                       Container(
-                        padding: EdgeInsets.all(8),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Container(
-                            color: Color.fromRGBO(0, 0, 0, 0.3),
-                            child: Icon(
-                              _list[4].icon,
-                              size: 40,
-                              color: Colors.white,
-                            ),
+                        padding: EdgeInsets.only(top: 2),
+                        height: 17,
+                        child: Text(
+                          _list[4].title,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            decoration: TextDecoration.none,
+                            color: Colors.white38,
+                            fontSize: 14.0,
                           ),
                         ),
                       ),
-                      //Column
-                      Expanded(child: Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.only(top: 2),
-                              height: 17,
-                              child: Text(
-                                _list[4].title,
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  decoration: TextDecoration.none,
-                                  color: Colors.white38,
-                                  fontSize: 14.0,
-                                ),
+                      Container(
+                          child: SizedBox(
+                            height: 24,
+                            child: TextField(
+                              controller: _longitudeController,
+                              style: TextStyle(color: Colors.white, fontSize: 20),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: _list[4].content,
+                                hintStyle: TextStyle(color: Colors.white, fontSize: 20),
                               ),
                             ),
-                            Container(
-                                child: SizedBox(
-                                  height: 24,
-                                  child: TextField(
-                                    keyboardType: TextInputType.number,
-                                    controller: _longitudeController,
-                                    style: TextStyle(color: Colors.white, fontSize: 20),
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: _longitude.toString(),
-                                      hintStyle: TextStyle(color: Colors.white, fontSize: 20),
-                                    ),
-                                  ),
-                                )
-                            ),
-                          ],
-                        ),
-                      ),),
-                      //icon
-
+                          )
+                      ),
                     ],
-                  )
-              ),
+                  ),
+                ),),
+                //icon
+
+              ],
+            )
+        ),
 
             ],
           ),
@@ -751,6 +713,7 @@ class AccountInformation {
   IconData icon;
   String title;
   String content;
+
 
   AccountInformation({required this.icon,required this.title,required this.content});
 

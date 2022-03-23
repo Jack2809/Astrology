@@ -3,6 +3,7 @@ import 'package:astrology/src/repository/current_user_shared_preferences.dart';
 import 'package:astrology/src/repository/natal_chart_.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class NatalChartPage extends StatelessWidget{
 
@@ -173,7 +174,7 @@ class NatalChartPage extends StatelessWidget{
               SizedBox(height: size.height*0.03),
               Container(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Ngôi sao',
@@ -183,6 +184,7 @@ class NatalChartPage extends StatelessWidget{
                         // fontWeight: FontWeight.bold,
                       ),
                     ),
+                    SizedBox(width: size.width * 0.12,),
                     Text(
                       'Nhà',
                       style: TextStyle(
@@ -191,6 +193,7 @@ class NatalChartPage extends StatelessWidget{
                         // fontWeight: FontWeight.bold,
                       ),
                     ),
+                    SizedBox(width: size.width * 0.2,),
                     Text(
                       'Cung',
                       style: TextStyle(
@@ -529,16 +532,24 @@ class Star extends StatelessWidget{
           Container(
             padding: EdgeInsets.all(10.0),
             width: double.infinity,
-            height: size.height * 0.2,
+            height: size.height * 0.35,
             decoration: BoxDecoration(
               color: Color.fromRGBO(46,36,76,1),
               borderRadius: BorderRadius.circular(15.0),
             ),
-            child: Text(
-                item.content,
-            style: TextStyle(
-              color: Colors.white,
-            )),
+            child: Html(
+              data: item.content,
+              style: {
+                "strong":Style(
+                  color: Colors.white,
+                  fontSize:FontSize.larger,
+                ),
+                "p":Style(
+                  color: Colors.white,
+                  fontSize:FontSize.large,
+                ),
+              },
+            ),
           ),
 
         ],

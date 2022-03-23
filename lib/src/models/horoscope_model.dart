@@ -28,13 +28,44 @@ class HoroscopeModel {
 class HoroscopeItem{
   final String lifeAttributeName;
   final String content;
+  final HoroscopeItemDetail detail;
 
-  HoroscopeItem({required this.lifeAttributeName,required this.content});
+  HoroscopeItem({required this.lifeAttributeName,required this.content,required this.detail});
 
   factory HoroscopeItem.fromJson(Map<String,dynamic> json){
     return HoroscopeItem(
         lifeAttributeName: json['lifeAttributeName'],
         content: json['content'],
+        detail: HoroscopeItemDetail.fromJson(json['aspect']),
+
     );
   }
 }
+
+class HoroscopeItemDetail{
+  final String planetBaseName;
+  final String planetCompareName;
+  final String angleName;
+  final String description;
+  final String mainContent;
+  final String planetBaseIcon;
+  final String planetCompareIcon;
+
+  HoroscopeItemDetail({required this.planetBaseName,required this.planetCompareName,required this.angleName,
+  required this.description,required this.mainContent,required this.planetBaseIcon,required this.planetCompareIcon});
+
+  factory HoroscopeItemDetail.fromJson(Map<String,dynamic>json){
+    return HoroscopeItemDetail(
+        planetBaseName: json['planetBaseName'],
+        planetCompareName: json['planetCompareName'],
+        angleName: json['angleName'],
+        description: json['description'],
+        mainContent: json['mainContent'],
+        planetBaseIcon: json['planetBaseIcon'],
+        planetCompareIcon: json['planetCompareIcon'],
+    );
+  }
+
+
+}
+

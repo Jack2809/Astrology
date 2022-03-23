@@ -1,4 +1,6 @@
 import 'package:astrology/src/repository/current_user_shared_preferences.dart';
+import 'package:astrology/src/repository/user_.dart';
+import 'package:astrology/src/resources/edit_account/add_profile.dart';
 import 'package:astrology/src/resources/edit_account/profile_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +12,6 @@ import '../../repository/google_sign_in.dart';
 
 
 class AccountPage extends StatefulWidget{
-
-  List<Profile> profileList;
-  AccountPage({required this.profileList});
 
   @override
   State<AccountPage> createState() => _AccountPageState();
@@ -28,7 +27,9 @@ class _AccountPageState extends State<AccountPage> {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
-        height: size.height,
+        constraints: BoxConstraints(
+          minHeight: size.height,minWidth: size.width
+        ),
         padding: EdgeInsets.fromLTRB(15.0,20.0,15.0,20.0),
         decoration: BoxDecoration(
             image: DecorationImage(
@@ -52,12 +53,24 @@ class _AccountPageState extends State<AccountPage> {
                       ),
                     ),
                     Spacer(),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.push(context,MaterialPageRoute(builder: (context)=> AddProfilePage()));
+                      },
+                      child: CircleAvatar(
+                      child: Icon(Icons.add,color: Colors.white,),
+                        radius: 15.0,
+                        backgroundColor: Colors.blue,
+                      ),
+                    ),
+                    SizedBox(width: size.width * 0.04),
                     GestureDetector(onTap: (){
                         final provider = Provider.of<GoogleSignInProvider>(
                         context, listen: false);
                         provider.logout();
                     },
-                        child: CircleAvatar(backgroundColor: Colors.white,radius: 15,)),
+                        child: CircleAvatar(child:Icon(Icons.logout),backgroundColor: Colors.blue,radius: 15,)),
+
                   ],
                 ),
               ),
@@ -192,19 +205,32 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
 
-    ListView.separated(
-      shrinkWrap: true,
-    padding: const EdgeInsets.all(8),
-    itemCount: widget.profileList.length,
-    itemBuilder: (BuildContext context, int index) {
-    if(index != 0){
-      return Follower(imageLink: widget.profileList[index].profilePhoto, name:widget.profileList[index].name,item:widget.profileList[index],);
-    }else{
-      return SizedBox();
-    }
-    },
-    separatorBuilder: (BuildContext context, int index) => const Divider(),
-    ),
+    // ListView.separated(
+    //   shrinkWrap: true,
+    // padding: const EdgeInsets.all(8),
+    // itemCount: widget.profileList.length,
+    // itemBuilder: (BuildContext context, int index) {
+    // if(index != 0){
+    //   return Follower(imageLink: widget.profileList[index].profilePhoto, name:widget.profileList[index].name,item:widget.profileList[index],);
+    // }else{
+    //   return SizedBox();
+    // }
+    // },
+    // separatorBuilder: (BuildContext context, int index) => const Divider(),
+    // ),
+
+            FutureBuilder<List<Profile>>(
+              future: fetchListProfile(),
+              builder: (context,snapshot){
+                if(snapshot.hasError){
+                  return Center(child: Text('Something went wrong!!'),);
+                }else if(snapshot.hasData){
+                  return ProfileList(profileList:snapshot.data!);
+                }else{
+                  return Center(child: CircularProgressIndicator(),);
+                }
+              },
+            ),
 
 
           ],
@@ -213,6 +239,31 @@ class _AccountPageState extends State<AccountPage> {
     );
 
   }
+}
+
+class ProfileList extends StatelessWidget{
+  const ProfileList({Key? key,required this.profileList}) : super(key:key);
+
+  final List<Profile> profileList;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      // padding: const EdgeInsets.all(8),
+      itemCount: profileList.length,
+      itemBuilder: (BuildContext context, int index) {
+        if(index !=0) {
+          return Follower(item: profileList[index], name: profileList[index].name, imageLink: profileList[index].profilePhoto,);
+        }else{
+          return SizedBox();
+        }
+      },
+      separatorBuilder: (BuildContext context, int index) => const SizedBox()
+    );
+  }
+
 }
 
 class Follower extends StatelessWidget{

@@ -118,11 +118,10 @@ class ShowDetail extends StatelessWidget{
           SizedBox(height: 10.0,),
           Text(
             item.description,
-            textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500,
+              color: Colors.white70,
+              fontSize: 17.0,
+              fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: 15.0,),

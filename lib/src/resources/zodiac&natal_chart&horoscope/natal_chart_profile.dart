@@ -3,6 +3,7 @@ import 'package:astrology/src/models/user.dart';
 import 'package:astrology/src/repository/natal_chart_.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 
 class NatalChartProfilePage extends StatelessWidget{
@@ -18,7 +19,7 @@ class NatalChartProfilePage extends StatelessWidget{
   }
 
   String getTime(String date){
-    String formatTime = DateFormat.yMd().format(DateTime.parse(date));
+    String formatTime = DateFormat.Hm().format(DateTime.parse(date));
     return formatTime;
   }
 
@@ -179,7 +180,7 @@ class NatalChartProfilePage extends StatelessWidget{
               SizedBox(height: size.height*0.03),
               Container(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Ngôi sao',
@@ -189,6 +190,7 @@ class NatalChartProfilePage extends StatelessWidget{
                         // fontWeight: FontWeight.bold,
                       ),
                     ),
+                    SizedBox(width: size.width * 0.12,),
                     Text(
                       'Nhà',
                       style: TextStyle(
@@ -197,6 +199,7 @@ class NatalChartProfilePage extends StatelessWidget{
                         // fontWeight: FontWeight.bold,
                       ),
                     ),
+                    SizedBox(width: size.width * 0.2,),
                     Text(
                       'Cung',
                       style: TextStyle(
@@ -540,11 +543,19 @@ class Star extends StatelessWidget{
               color: Color.fromRGBO(46,36,76,1),
               borderRadius: BorderRadius.circular(15.0),
             ),
-            child: Text(
-                item.content,
-                style: TextStyle(
+            child: Html(
+              data: item.content,
+              style: {
+                "strong":Style(
                   color: Colors.white,
-                )),
+                  fontSize:FontSize.larger,
+                ),
+                "p":Style(
+                  color: Colors.white,
+                  fontSize:FontSize.large,
+                ),
+              },
+            ),
           ),
 
         ],

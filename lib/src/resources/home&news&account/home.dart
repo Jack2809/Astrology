@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
                           ),
 
                           Text(
-                            'Spirit Astro',
+                            'Spirit AstroloZ',
                             style: TextStyle(
                                 color:Colors.white,
                               fontSize: 25.0,
@@ -124,39 +124,45 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Positioned(
                       bottom: 0,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Lá số hằng ngày',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.black.withOpacity(0.3),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Lá số hằng ngày',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 5.0),
-                                Text(
-                                  'bạn có thể tìm hiểu tất tần tật về \nlá số của bạn',
-                                  style: TextStyle(
-                                    color: Colors.white70,
+                                  SizedBox(height: 5.0),
+                                  Text(
+                                    'bạn có thể tìm hiểu tất tần tật về \nlá số của bạn',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
 
-                          CircleAvatar(
-                            child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
-                            backgroundColor: Colors.white,
-                            radius: 20.0,
-                          ),
-                        ],
+                            CircleAvatar(
+                              child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                              backgroundColor: Colors.white,
+                              radius: 20.0,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -187,39 +193,45 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Positioned(
                       bottom: 0,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Cung hoàng đạo',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.black.withOpacity(0.3),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Cung hoàng đạo',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 5.0),
-                                Text(
-                                  'bạn có thể tìm hiểu tất tần tật về \n12 cung hoàng đạo',
-                                  style: TextStyle(
-                                    color: Colors.white70,
+                                  SizedBox(height: 5.0),
+                                  Text(
+                                    'bạn có thể tìm hiểu tất tần tật về \n12 cung hoàng đạo',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
 
-                          CircleAvatar(
-                            child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
-                            backgroundColor: Colors.white,
-                            radius: 20.0,
-                          ),
-                        ],
+                            CircleAvatar(
+                              child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                              backgroundColor: Colors.white,
+                              radius: 20.0,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -248,40 +260,46 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Positioned(
                       top:0,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Bản đồ sao',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.black.withOpacity(0.3),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Bản đồ sao',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 5.0),
-                                Text(
-                                  'bạn muốn hiểu rõ về con người \ncủa bạn? bạn đã đến đúng nơi rồi đó',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 12.5
+                                  SizedBox(height: 5.0),
+                                  Text(
+                                    'bạn muốn hiểu rõ về con người \ncủa bạn? bạn đã đến đúng nơi rồi đó',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 12.5
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
 
-                          CircleAvatar(
-                            child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
-                            backgroundColor: Colors.white,
-                            radius: 20.0,
-                          ),
-                        ],
+                            CircleAvatar(
+                              child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                              backgroundColor: Colors.white,
+                              radius: 20.0,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -310,39 +328,45 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Positioned(
                       bottom: 0,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Hành Tinh',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.black.withOpacity(0.3),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Hành Tinh',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 5.0),
-                                Text(
-                                  'bạn có thể tìm hiểu tất tần tật về \nhành tinh của bạn',
-                                  style: TextStyle(
-                                    color: Colors.white70,
+                                  SizedBox(height: 5.0),
+                                  Text(
+                                    'bạn có thể tìm hiểu tất tần tật về \nhành tinh của bạn',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
 
-                          CircleAvatar(
-                            child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
-                            backgroundColor: Colors.white,
-                            radius: 20.0,
-                          ),
-                        ],
+                            CircleAvatar(
+                              child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                              backgroundColor: Colors.white,
+                              radius: 20.0,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -371,40 +395,46 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Positioned(
                       top:0,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Nhà',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          color: Colors.black.withOpacity(0.3),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.fromLTRB(20.0,0,20.0,0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Nhà',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20.0,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 5.0),
-                                Text(
-                                  'bạn có thể tìm hiểu về nhà trong thiên\nvăn học của bạn',
-                                  style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 12.5
+                                  SizedBox(height: 5.0),
+                                  Text(
+                                    'bạn có thể tìm hiểu về nhà trong thiên\nvăn học của bạn',
+                                    style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12.5
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
 
-                          CircleAvatar(
-                            child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
-                            backgroundColor: Colors.white,
-                            radius: 20.0,
-                          ),
-                        ],
+                            CircleAvatar(
+                              child: Icon(Icons.arrow_forward_ios,color: Colors.black,),
+                              backgroundColor: Colors.white,
+                              radius: 20.0,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

@@ -47,7 +47,7 @@ class _ZodiacDetailState extends State<ZodiacDetail> {
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage('assets/background/background.png'),
-                  fit: BoxFit.fill
+                  fit: BoxFit.fill,
               )
           ),
           child: FutureBuilder<ZodiacModel>(
@@ -118,14 +118,18 @@ class ShowDetail extends StatelessWidget{
             ),
           ),
           SizedBox(height: 10.0,),
-          Text(
-            item.descreiption,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500,
-            ),
+          Html(
+            data: item.descreiption,
+            style: {
+              "strong":Style(
+                color: Colors.white,
+                fontSize:FontSize.larger,
+              ),
+              "p":Style(
+                color: Colors.white70,
+                fontSize:FontSize.large,
+              ),
+            },
           ),
           SizedBox(height: 15.0,),
           Container(
